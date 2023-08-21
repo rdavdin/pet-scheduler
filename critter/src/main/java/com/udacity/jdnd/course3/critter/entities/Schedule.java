@@ -1,13 +1,15 @@
 package com.udacity.jdnd.course3.critter.entities;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.ManyToMany;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,14 +22,14 @@ public class Schedule {
     @GeneratedValue
     private Long id;
 
-    private LocalDateTime time;
+    private LocalDate date;
 
     @ElementCollection
     private Set<EmployeeSkill> activities;
 
-    @ManyToOne
-    private Employee employee;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Employee> employees;
 
-    @ManyToOne
-    private Pet pet;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Pet> pets;
 }

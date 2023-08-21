@@ -7,17 +7,20 @@ import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.ManyToMany;
 
 import org.hibernate.annotations.Nationalized;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 @Entity
 public class Employee {
     @Id
@@ -28,14 +31,22 @@ public class Employee {
     private String name;
 
     @ElementCollection
+    @Enumerated(EnumType.STRING)
     private Set<EmployeeSkill> skills;
 
     @ElementCollection
+    @Enumerated(EnumType.STRING)
     private Set<DayOfWeek> daysAvailable;
 
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private  List<Schedule> schedules;
-
-    public Employee() {
+    // @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    // private  List<Schedule> schedules;
+    
+    @Override
+    public String toString() {
+        return "Employee [id=" + id + ", name=" + name + ", skills=" + skills + ", daysAvailable=" + daysAvailable
+                + "]";
     }
+
+
+    
 }

@@ -1,6 +1,9 @@
 package com.udacity.jdnd.course3.critter.entities;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,37 +15,51 @@ import jakarta.persistence.OneToMany;
 
 import org.hibernate.annotations.Nationalized;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 @Entity
 public class Customer {
     @Id
     @GeneratedValue
     private Long id;
-
+    
     @Nationalized
     private String name;
-
+    
     private String phoneNumber;
-
+    
     @Column(length=512)
     private String notes;
+    
+    @Setter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "owner", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
+    private Set<Pet> pets = new HashSet<>();
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Pet> pets;
-
-    public Customer() {
-    }
-
-    public Customer(Long id, String name, String phoneNumber, String notes, List<Pet> pets) {
-        this.id = id;
+    public Customer(String name, String phoneNumber) {
         this.name = name;
         this.phoneNumber = phoneNumber;
-        this.notes = notes;
-        this.pets = pets;
+    }
+    
+    public void addPet(Pet pet) {
+        if(pet != null && !this.pets.contains(pet)){
+            this.pets.add(pet);
+            pet.setOwner(this);
+        }
     }
 
-    
+    public void remove(Pet pet){
+        if(this.pets.remove(pet)){
+            pet.setOwner(null);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Customer [id=" + id + ", name=" + name + ", phoneNumber=" + phoneNumber + ", notes=" + notes + ", pets="
+                + "]";
+    }
 }
