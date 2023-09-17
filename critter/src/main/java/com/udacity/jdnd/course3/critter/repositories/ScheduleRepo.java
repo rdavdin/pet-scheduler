@@ -1,5 +1,6 @@
 package com.udacity.jdnd.course3.critter.repositories;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -26,5 +27,7 @@ public interface ScheduleRepo extends JpaRepository<Schedule, Long>{
 
     @Query("SELECT s FROM Schedule s WHERE :employee MEMBER OF s.employees")
     public List<Schedule> findByAEmployee(Employee employee);
+
+    public List<Schedule> findByDate(LocalDate date);
     
 }

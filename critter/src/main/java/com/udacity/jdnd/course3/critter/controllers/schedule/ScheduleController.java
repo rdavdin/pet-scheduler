@@ -2,6 +2,7 @@ package com.udacity.jdnd.course3.critter.controllers.schedule;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.udacity.jdnd.course3.critter.entities.Employee;
@@ -10,6 +11,7 @@ import com.udacity.jdnd.course3.critter.entities.Schedule;
 import com.udacity.jdnd.course3.critter.services.EmployeeService;
 import com.udacity.jdnd.course3.critter.services.PetService;
 import com.udacity.jdnd.course3.critter.services.ScheduleService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -30,11 +32,12 @@ public class ScheduleController {
     public ScheduleDTO createSchedule(@RequestBody ScheduleDTO scheduleDTO) {
         try {
             Schedule schedule = convertDTO2Schedule(scheduleDTO);
-            scheduleService.save(schedule);
-            return convertSchedule2DTO(schedule);
+            Schedule savedSchedule = scheduleService.save(schedule);
+            return convertSchedule2DTO(savedSchedule);
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+//            e.printStackTrace();
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Server Error");
         }
     }
 

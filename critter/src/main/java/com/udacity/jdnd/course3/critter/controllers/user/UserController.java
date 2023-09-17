@@ -1,7 +1,10 @@
 package com.udacity.jdnd.course3.critter.controllers.user;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.udacity.jdnd.course3.critter.entities.Customer;
@@ -11,6 +14,7 @@ import com.udacity.jdnd.course3.critter.entities.Pet;
 import com.udacity.jdnd.course3.critter.services.CustomerService;
 import com.udacity.jdnd.course3.critter.services.EmployeeService;
 import com.udacity.jdnd.course3.critter.services.PetService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.util.List;
@@ -50,8 +54,10 @@ public class UserController {
         Customer owner = petService.getOwnerById(petId);
         if(owner != null){
             return convertCustomer2DTO(owner);
+        }else{
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Not Found");
         }
-        return null;
     }
 
     @DeleteMapping("/customer/{customerId}")
@@ -59,7 +65,8 @@ public class UserController {
         try {
             customerService.delete(customerId);
         } catch (Exception e) {
-            throw e;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Customer Not Found", e);
         }
     }
 
@@ -76,7 +83,8 @@ public class UserController {
             Employee e = employeeService.getEmployeeById(employeeId);
             return convertEmployee2DTO(e);
         } catch (Exception e) {
-            return null;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Employee Not Found", e);
         }
     }
 
@@ -88,10 +96,13 @@ public class UserController {
             employeeService.save(e);    
         } catch (Exception e) {
             System.out.println("Cannot find the employee with id "+employeeId);
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Employee Not Found", e);
         }
     }
 
-    @GetMapping("/employee/availability")
+    @Operation(summary = "Check which employees availability. No data is affected by this method.")
+    @PostMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
         List<Employee> employees = employeeService.checkAvailabilityEmployees(employeeDTO.getSkills(), employeeDTO.getDate());
         return employees.stream().map(e -> convertEmployee2DTO(e)).toList();

@@ -2,12 +2,14 @@ package com.udacity.jdnd.course3.critter.controllers.pet;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import com.udacity.jdnd.course3.critter.entities.Customer;
 import com.udacity.jdnd.course3.critter.entities.Pet;
 import com.udacity.jdnd.course3.critter.services.CustomerService;
 import com.udacity.jdnd.course3.critter.services.PetService;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -31,7 +33,8 @@ public class PetController {
             return rPetDTO;
         } catch (Exception e) {
             System.out.println("Owner required! But not found it.");
-            return null;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Owner required! But Not Found", e);
         }
     }
 
@@ -41,7 +44,8 @@ public class PetController {
             Pet pet = petService.getPetById(petId);
             return convertPet2DTO(pet);
         } catch (Exception e) {
-            return null;
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "Pet Not Found", e);
         }
     }
 
